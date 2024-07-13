@@ -4,14 +4,15 @@
 call ale#Set('erlang_syntaxerl_executable', 'syntaxerl')
 
 function! ale_linters#erlang#syntaxerl#Handle(buffer, lines) abort
-    let l:pattern = '\v\C:(\d+):( warning:)? (.+)'
+    let l:pattern = '\v\C:(\d+):%((\d+):)?( warning:)? (.+)'
     let l:loclist = []
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         call add(l:loclist, {
         \   'lnum': str2nr(l:match[1]),
-        \   'text': l:match[3],
-        \   'type': empty(l:match[2]) ? 'E' : 'W',
+        \   'col':  empty(l:match[2]) ? 0 : str2nr(l:match[2]),
+        \   'text': l:match[4],
+        \   'type': empty(l:match[3]) ? 'E' : 'W',
         \})
     endfor
 
@@ -31,9 +32,9 @@ function! s:GetCommand(buffer) abort
 endfunction
 
 function! s:GetCommandFromHelpOutput(buffer, output, metadata) abort
-    let l:has_b_option = match(a:output, '\V\C-b, --base\>') > -1
+    let l:has_c_option = match(a:output, '\V\C-c, --columns\>') > -1
 
-    return l:has_b_option ? '%e -b %s %t' : '%e %t'
+    return l:has_c_option ? '%e -b %s -c %t' : '%e -b %s %t'
 endfunction
 
 call ale#linter#Define('erlang', {

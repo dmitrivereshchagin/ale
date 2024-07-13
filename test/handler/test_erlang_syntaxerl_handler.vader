@@ -9,16 +9,32 @@ Execute (Handle SyntaxErl output):
   \ [
   \   {
   \     'lnum': 42,
+  \     'col':  10,
   \     'text': "syntax error before: ','",
   \     'type': 'E',
   \   },
   \   {
   \     'lnum': 42,
+  \     'col':  0,
+  \     'text': "syntax error before: ','",
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 42,
+  \     'col':  10,
+  \     'text': 'function foo/0 is unused',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 42,
+  \     'col':  0,
   \     'text': 'function foo/0 is unused',
   \     'type': 'W',
   \   },
   \ ],
   \ ale_linters#erlang#syntaxerl#Handle(bufnr(''), [
+  \   "/tmp/v2wDixk/1/module.erl:42:10: syntax error before: ','",
   \   "/tmp/v2wDixk/1/module.erl:42: syntax error before: ','",
+  \   '/tmp/v2wDixk/2/module.erl:42:10: warning: function foo/0 is unused',
   \   '/tmp/v2wDixk/2/module.erl:42: warning: function foo/0 is unused',
   \ ])
