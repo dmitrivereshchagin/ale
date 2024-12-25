@@ -1,0 +1,63 @@
+Before:
+  runtime autoload/ale/erlang.vim
+  call ale#test#SetDirectory('/testplugin/test')
+
+After:
+  unlet! b:root
+  call ale#test#RestoreDirectory()
+
+Execute(Root of Rebar3 project should be detected):
+  let b:root = ale#test#CreateDirectoryWith([
+  \ 'rebar.lock',
+  \])
+
+  call ale#test#SetFilename(b:root . '/src/app.erl')
+  AssertEqual b:root, ale#erlang#FindProjectRoot(bufnr(''))
+
+  let b:root = ale#test#CreateDirectoryWith([
+  \ '_build/default/lib/dep/rebar.lock',
+  \ 'rebar.lock',
+  \])
+
+  call ale#test#SetFilename(b:root . '/_build/default/lib/dep/src/dep.erl')
+  AssertEqual b:root, ale#erlang#FindProjectRoot(bufnr(''))
+
+  let b:root = ale#test#CreateDirectoryWith([
+  \ '_checkouts/dep/_build/',
+  \ '_build/',
+  \])
+
+  call ale#test#SetFilename(b:root . '/_checkouts/dep/src/dep.erl')
+  AssertEqual b:root, ale#erlang#FindProjectRoot(bufnr(''))
+
+Execute(Root of Erlang.mk project should be detected):
+  let b:root = ale#test#CreateDirectoryWith([
+  \ 'erlang.mk',
+  \])
+
+  call ale#test#SetFilename(b:root . '/src/app.erl')
+  AssertEqual b:root, ale#erlang#FindProjectRoot(bufnr(''))
+
+  let b:root = ale#test#CreateDirectoryWith([
+  \ 'deps/dep/erlang.mk',
+  \ 'erlang.mk',
+  \])
+
+  call ale#test#SetFilename(b:root . '/deps/dep/src/dep.erl')
+  AssertEqual b:root, ale#erlang#FindProjectRoot(bufnr(''))
+
+Execute(Additional root markers can be used):
+  let b:root = ale#test#CreateDirectoryWith([
+  \ '.marker.d/',
+  \ '.marker',
+  \])
+
+  call ale#test#SetFilename(b:root . '/src/app.erl')
+
+  AssertEqual '', ale#erlang#FindProjectRoot(bufnr(''), ['.marker.d'])
+  AssertEqual b:root, ale#erlang#FindProjectRoot(bufnr(''), ['.marker.d/'])
+
+  AssertEqual '', ale#erlang#FindProjectRoot(bufnr(''), ['.marker/'])
+  AssertEqual b:root, ale#erlang#FindProjectRoot(bufnr(''), ['.marker'])
+
+  AssertEqual '', ale#erlang#FindProjectRoot(bufnr(''))

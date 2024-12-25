@@ -41,6 +41,17 @@ g:ale_erlang_dialyzer_rebar3_profile     *g:ale_erlang_dialyzer_rebar3_profile*
 
 
 -------------------------------------------------------------------------------
+elp                                                            *ale-erlang-elp*
+
+g:ale_erlang_elp_executable                       *g:ale_erlang_elp_executable*
+                                                  *b:ale_erlang_elp_executable*
+  Type: |String|
+  Default: `'elp'`
+
+  This variable can be changed to specify the elp executable.
+
+
+-------------------------------------------------------------------------------
 elvis                                                        *ale-erlang-elvis*
 
 g:ale_erlang_elvis_executable                   *g:ale_erlang_elvis_executable*
