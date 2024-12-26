@@ -62,6 +62,44 @@ function! ale#test#SetFilename(path) abort
     silent! noautocmd execute 'file ' . fnameescape(l:full_path)
 endfunction
 
+let s:created_directories = []
+
+function! s:MkdirAll(path) abort
+    if !has('patch-8.0.1708') && isdirectory(a:path)
+        return
+    endif
+
+    call mkdir(a:path, 'p')
+endfunction
+
+function! ale#test#CreateDirectoryWith(entries) abort
+    let l:directory = ale#util#Tempname()
+
+    call add(s:created_directories, l:directory)
+    call s:MkdirAll(l:directory)
+
+    for l:entry in a:entries
+        let l:path = ale#path#GetAbsPath(l:directory, l:entry)
+
+        if l:path[-1:] is# '/'
+            call s:MkdirAll(l:path)
+        else
+            call s:MkdirAll(ale#path#Dirname(l:path))
+            call writefile([], l:path)
+        endif
+    endfor
+
+    return l:directory
+endfunction
+
+function! ale#test#RemoveCreatedDirectories() abort
+    for l:directory in s:created_directories
+        call delete(l:directory, 'rf')
+    endfor
+
+    let s:created_directories = []
+endfunction
+
 function! RemoveNewerKeys(results) abort
     for l:item in a:results
         if has_key(l:item, 'module')
