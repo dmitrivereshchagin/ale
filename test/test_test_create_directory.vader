@@ -1,0 +1,46 @@
+Before:
+  runtime autoload/ale/test.vim
+
+After:
+  unlet! b:directory b:directories
+  call ale#test#RemoveCreatedDirectories()
+
+Execute():
+  let b:directory = ale#test#CreateDirectoryWith([])
+  Assert ale#path#IsTempName(b:directory)
+
+Execute():
+  let b:directory = ale#test#CreateDirectoryWith([
+  \ 'foo',
+  \ 'bar/baz',
+  \ 'bar/qux/zim',
+  \])
+
+  Assert filereadable(b:directory . '/foo')
+  Assert filereadable(b:directory . '/bar/baz')
+  Assert filereadable(b:directory . '/bar/qux/zim')
+
+Execute():
+  let b:directory = ale#test#CreateDirectoryWith([
+  \ 'foo/',
+  \ 'bar/baz/',
+  \ 'bar/qux/zim/',
+  \])
+
+  Assert isdirectory(b:directory . '/foo')
+  Assert isdirectory(b:directory . '/bar/baz')
+  Assert isdirectory(b:directory . '/bar/qux/zim')
+
+Execute():
+  let b:directories = [
+  \ ale#test#CreateDirectoryWith([]),
+  \ ale#test#CreateDirectoryWith([]),
+  \]
+
+  Assert isdirectory(b:directories[0])
+  Assert isdirectory(b:directories[1])
+
+  call ale#test#RemoveCreatedDirectories()
+
+  Assert !isdirectory(b:directories[0])
+  Assert !isdirectory(b:directories[1])
