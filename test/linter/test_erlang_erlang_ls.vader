@@ -3,7 +3,7 @@ Before:
 
 After:
   unlet! b:root
-
+  call ale#test#RemoveCreatedDirectories()
   call ale#assert#TearDownLinterTest()
 
 Execute(The default command should be correct):
@@ -31,40 +31,73 @@ Execute(Log directory should be configurable):
   \ . ' --log-level=' . ale#Escape('info')
 
 Execute(Project root should be detected using erlang_ls.config):
-  let b:root = '../test-files/erlang/app_with_erlang_ls_config'
+  let b:root = ale#test#CreateDirectoryWith([
+  \ 'erlang_ls.config',
+  \])
 
   call ale#test#SetFilename(b:root . '/src/app.erl')
-  AssertLSPProject ale#test#GetFilename(b:root)
+  AssertLSPProject b:root
+
+  let b:root = ale#test#CreateDirectoryWith([
+  \ '_build/default/lib/dep/erlang_ls.config',
+  \ 'erlang_ls.config',
+  \])
 
   call ale#test#SetFilename(b:root . '/_build/default/lib/dep/src/dep.erl')
-  AssertLSPProject ale#test#GetFilename(b:root)
+  AssertLSPProject b:root
+
+  let b:root = ale#test#CreateDirectoryWith([
+  \ 'deps/dep/erlang_ls.config',
+  \ 'erlang_ls.config',
+  \])
 
   call ale#test#SetFilename(b:root . '/deps/dep/src/dep.erl')
-  AssertLSPProject ale#test#GetFilename(b:root)
+  AssertLSPProject b:root
 
 Execute(Root of Rebar3 project should be detected):
-  let b:root = '../test-files/erlang/rebar3_app'
+  let b:root = ale#test#CreateDirectoryWith([
+  \ 'rebar.lock',
+  \])
 
   call ale#test#SetFilename(b:root . '/src/app.erl')
-  AssertLSPProject ale#test#GetFilename(b:root)
+  AssertLSPProject b:root
+
+  let b:root = ale#test#CreateDirectoryWith([
+  \ '_build/default/lib/dep/rebar.lock',
+  \ 'rebar.lock',
+  \])
 
   call ale#test#SetFilename(b:root . '/_build/default/lib/dep/src/dep.erl')
-  AssertLSPProject ale#test#GetFilename(b:root)
+  AssertLSPProject b:root
+
+  let b:root = ale#test#CreateDirectoryWith([
+  \ '_checkouts/dep/_build/',
+  \ '_build/',
+  \])
 
   call ale#test#SetFilename(b:root . '/_checkouts/dep/src/dep.erl')
-  AssertLSPProject ale#test#GetFilename(b:root)
+  AssertLSPProject b:root
 
 Execute(Root of Erlang.mk project should be detected):
-  let b:root = '../test-files/erlang/erlang_mk_app'
+  let b:root = ale#test#CreateDirectoryWith([
+  \ 'erlang.mk',
+  \])
 
   call ale#test#SetFilename(b:root . '/src/app.erl')
-  AssertLSPProject ale#test#GetFilename(b:root)
+  AssertLSPProject b:root
+
+  let b:root = ale#test#CreateDirectoryWith([
+  \ 'deps/dep/erlang.mk',
+  \ 'erlang.mk',
+  \])
 
   call ale#test#SetFilename(b:root . '/deps/dep/src/dep.erl')
   AssertLSPProject ale#test#GetFilename(b:root)
 
 Execute(Root of kerl managed Erlang/OTP installation should be detected):
-  let b:root = '../test-files/erlang/kerl_otp_root'
+  let b:root = ale#test#CreateDirectoryWith([
+  \ '.kerl_config',
+  \])
 
   call ale#test#SetFilename(b:root . '/lib/stdlib-4.1.1/array.erl')
-  AssertLSPProject ale#test#GetFilename(b:root)
+  AssertLSPProject b:root
